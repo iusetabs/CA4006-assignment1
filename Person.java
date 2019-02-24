@@ -5,12 +5,20 @@ public class Person {
   private int cur_floor;
   private int tar_floor;
 
-	public String getId() {
-		return id;
+  Person(){}
+
+  Person(String pid, int cur_floor, int tar_floor){
+    this.pid = pid;
+    this.cur_floor = cur_floor;
+    this.tar_floor = tar_floor;
+  }
+
+	public String getPid() {
+		return pid;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setpid(String id) {
+		this.pid = id;
 	}
 
 	public int getCur_floor() {
@@ -40,4 +48,5 @@ public class Person {
          t.start ();
       }
    }
+
 }
