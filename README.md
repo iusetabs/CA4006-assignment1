@@ -10,13 +10,13 @@
 
 + ### The elevator(s) can be represented using threads
 
-..* ### Each person boarding or leaving the elevator is also represented by a thread
+	- ### Each person boarding or leaving the elevator is also represented by a thread
 
 ## Methods
 
 + ### ArrivingGoingFromTo(int atFloor, int toFloor)
 
-..+ ###  100 ticks to go from one floor to the adjacent one
+	- ###  100 ticks to go from one floor to the adjacent one
 
 
 
