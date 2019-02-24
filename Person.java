@@ -1,4 +1,6 @@
-public class Person {
+import java.lang.*;
+
+public class Person extends Thread {
 
   private Thread t;
   private String pid;
@@ -38,7 +40,7 @@ public class Person {
 	}
 
   public void run() {
-
+    System.out.println("Hi");
   }
 
    public void start () {
