@@ -1,0 +1,5 @@
+# Ignore the .class files
+*.class
+
+# Ignore log files when we use them
+*.log
