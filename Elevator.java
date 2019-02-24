@@ -1,4 +1,5 @@
 import java.lang.*;
+import java.util.*;
 
 public class Elevator extends Thread{
 
@@ -80,7 +81,7 @@ public class Elevator extends Thread{
 	public void setCurrent_floor(int current_floor) {
 		this.current_floor = current_floor;
 	}
-  
+
 	public boolean isActive() {
 		return active;
 	}
