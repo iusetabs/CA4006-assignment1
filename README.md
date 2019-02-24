@@ -1,22 +1,22 @@
 # This is the repo for our project
 
 
-## + This is the assignment link: https://www.computing.dcu.ie/~mcrane/CA4assignmentElevator.html
++ ## This is the assignment link: https://www.computing.dcu.ie/~mcrane/CA4assignmentElevator.html
 
 
 ## Main points: 
 
-### + Elevator controller in the 10 floor terminal building 
++ ### Elevator controller in the 10 floor terminal building 
 
-### + The elevator(s) can be represented using threads
++ ### The elevator(s) can be represented using threads
 
-### ..+ Each person boarding or leaving the elevator is also represented by a thread
+..+ ### Each person boarding or leaving the elevator is also represented by a thread
 
 ## Methods
 
-### + ArrivingGoingFromTo(int atFloor, int toFloor)
++ ### ArrivingGoingFromTo(int atFloor, int toFloor)
 
-### ..+ 100 ticks to go from one floor to the adjacent one
+..+ ###  100 ticks to go from one floor to the adjacent one
 
 
 
