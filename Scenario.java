@@ -1,8 +1,15 @@
 import java.util.*;
 import java.util.concurrent.*;
+import ManagementSystem;
 
 
 public class Scenario{
+
+  private final ManagementSystem ms = new ManagementSystem();
+
+  private static void PeepsFactory(){
+    //TODO FUCK YEA CUNT
+  }
 
   public static void main(String [] args){
     ConcurrentLinkedQueue<Person> test_queue = new ConcurrentLinkedQueue<Person>(); //FIFO not allowed null elements
@@ -17,6 +24,7 @@ public class Scenario{
     int i = 0;
     for (Person elem : people_array){
       test_queue.add(elem);
+      if (elev1.get
     }
   }
 }

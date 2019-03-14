@@ -16,11 +16,13 @@ public class MangementSystem{
 
   public boolean button_press(Person e){
     this.request_queue.add(e);
-    this.requestElevator(e.getTar_floor());
-    return true;
+    if (this.requestElevator(e.getCur_floor(), e.getTar_floor()))
+      return true;
+    System.out.println("A person has decided to get the stairs instead");
+    e = null;
   }
 
-  public boolean requestElevator(int to_floor){
-    return this.elevators.get("Test").letMeIn(to_floor);
+  public boolean requestElevator(int at_floor, int to_floor){
+    return this.elevators.get("Test").arrivingGoingFromTo(at_floor, to_floor);
   }
 }

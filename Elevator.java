@@ -42,12 +42,12 @@ public class Elevator extends Thread{
 
   /*-------------START CLASS FUNCTIONS-------*/
 
-  public void ArrivingGoingFromTo(int atFloor, int toFloor){
+  public boolean arrivingGoingFromTo(int atFloor, int toFloor){
      this.current_floor = atFloor;
-     this.letMeIn(toFloor);
+     return this.letMeIn(toFloor);
   }
 
-  public Boolean letMeIn(int toFloor){
+  public boolean letMeIn(int toFloor){
       if (this.cur_capacity+1==this.max_capacity)
         return false; //no room for you bbz
       this.newDestination(toFloor);
@@ -55,6 +55,8 @@ public class Elevator extends Thread{
   }
 
   public void newDestination(int floor){
+    if (this.active == False)
+      this.setActive(true);
     this.to_go_list.add(floor);
   }
 
@@ -90,8 +92,11 @@ public class Elevator extends Thread{
 		return active;
 	}
 
-	public void setActive(boolean active) {
-		this.active = active;
+	public void setActive(boolean a) {
+		this.active = a;
+    if (a == true &&  ){
+
+    }
 	}
 
 	public String getElevId() {
