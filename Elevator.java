@@ -1,5 +1,7 @@
 import java.lang.*;
 import java.util.*;
+import java.util.concurrent.*;
+
 
 public class Elevator extends Thread{
 
@@ -18,8 +20,10 @@ public class Elevator extends Thread{
   private int max_capacity = 10; //vanilla 10 people max
   private int next_floor = -1;
   private int cur_capacity = 0;
-  private LinkedList<Integer> to_go_list = new LinkedList<>();
-
+  ConcurrentLinkedQueue<Person> to_go_list = new ConcurrentLinkedQueue<Person>(); //FIFO not allowed null elements
+  //The size function and the any function with All are not guaranted to work. Unless you lock queue during these operations.
+  //Don't rely on iterators with this queue. It can concurrently change.
+  //https://docs.oracle.com/javase/10/docs/api/java/util/concurrent/ConcurrentLinkedQueue.html
 
 /*------------CONSTRUCTORS----------------*/
   Elevator(){}
@@ -31,7 +35,7 @@ public class Elevator extends Thread{
     this.cur_capacity = 1;
     this.current_floor = c_floor;
     this.next_floor = n_floor;
-    this.active = true;
+    this.active = false;
   }
   /*-----------END CONSTRUCTORS------------*/
 
