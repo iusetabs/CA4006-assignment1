@@ -9,8 +9,8 @@ public class Person extends Thread {
 
   Person(){}
 
-  Person(String pid, int cur_floor, int tar_floor){
-    this.pid = pid;
+  Person(int cur_floor, int tar_floor){
+    //this.pid = pid;
     this.cur_floor = cur_floor;
     this.tar_floor = tar_floor;
   }
