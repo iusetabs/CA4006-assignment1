@@ -15,7 +15,7 @@ public class Elevator extends Thread{
   // p.start ();
 
   private int current_floor = 0;
-  private boolean active = false;
+  private boolean is_active = false;
   private String id;
   private int max_capacity = 10; //vanilla 10 people max
   private int next_floor = -1;
@@ -35,29 +35,40 @@ public class Elevator extends Thread{
     this.cur_capacity = 1;
     this.current_floor = c_floor;
     this.next_floor = n_floor;
-    this.active = false;
+    this.is_active = true;
   }
   /*-----------END CONSTRUCTORS------------*/
+
+  public void run(){
+  //  try{
+      Thread currentThread = Thread.currentThread();
+      System.out.println("Hello from Elevator ID: " + this.id);
+      System.out.println("id of the thread is " + currentThread.getId());
+  //  }
+//    catch (InterruptedException e){
+  //    System.out.println("Elevator ID: " + this.id + " interrupted.");
+  //  }
+	}
 
 
   /*-------------START CLASS FUNCTIONS-------*/
 
-  public boolean arrivingGoingFromTo(int atFloor, int toFloor){
-     this.current_floor = atFloor;
-     return this.letMeIn(toFloor);
+  public boolean arrivingGoingFromTo(Person p){
+     //this.current_floor = atFloor;
+     return this.letMeIn(p);
   }
 
-  public boolean letMeIn(int toFloor){
+  public boolean letMeIn(Person p){
       if (this.cur_capacity+1==this.max_capacity)
         return false; //no room for you bbz
-      this.newDestination(toFloor);
+      this.newDestination(p);
       return true; //Yes you can come in bbz
   }
 
-  public void newDestination(int floor){
-    if (this.active == False)
-      this.setActive(true);
-    this.to_go_list.add(floor);
+  public void newDestination(Person p){
+    if (this.is_active == false)
+      this.setIsActive(true);
+    this.to_go_list.add(p);
   }
 
   public void goUp(){
@@ -74,12 +85,6 @@ public class Elevator extends Thread{
 
 
   /*------------START GETTERS & SETTERS------------*/
-
-  public void run(){
-
-	   System.out.println("Hello from the thread");
-	}
-
 	public int getCurrent_floor() {
 		return current_floor;
 	}
@@ -88,15 +93,12 @@ public class Elevator extends Thread{
 		this.current_floor = current_floor;
 	}
 
-	public boolean isActive() {
-		return active;
+	public boolean getIsActive() {
+		return this.is_active;
 	}
 
-	public void setActive(boolean a) {
-		this.active = a;
-    if (a == true &&  ){
-
-    }
+	public void setIsActive(boolean a) {
+		this.is_active = a;
 	}
 
 	public String getElevId() {

@@ -1,28 +1,33 @@
 import java.lang.*;
 import java.util.*;
 import java.util.concurrent.*;
-import Person;
-import Elevator;
 
-public class MangementSystem{
+public class ManagementSystem{
 
   private ConcurrentLinkedQueue<Person> request_queue;
-  private ConcurrentHashMap<Integer, Elevator> elevators;
+  private ConcurrentHashMap<String, Elevator> elevators;
 
-  public MangementSystem(){
+  ManagementSystem(){
      this.request_queue = new ConcurrentLinkedQueue<Person>();
-     this.elevators = new ConcurrentHashMap<Integer>();
+     this.elevators = new ConcurrentHashMap<String, Elevator>();
   }
 
-  public boolean button_press(Person e){
-    this.request_queue.add(e);
-    if (this.requestElevator(e.getCur_floor(), e.getTar_floor()))
+  public boolean button_press(Person p){
+    this.request_queue.add(p);
+    if (this.requestElevator(p))
       return true;
     System.out.println("A person has decided to get the stairs instead");
-    e = null;
+    p = null;
+    return false;
   }
 
-  public boolean requestElevator(int at_floor, int to_floor){
-    return this.elevators.get("Test").arrivingGoingFromTo(at_floor, to_floor);
+  public boolean requestElevator(Person p){
+    return this.elevators.get("Test").arrivingGoingFromTo(p);
+  }
+
+  public void addElevator(String key, Elevator elev){
+      this.elevators.put(key, elev);
+      elev.start();
+      Thread.sleep(1000); //1 second sleep
   }
 }
