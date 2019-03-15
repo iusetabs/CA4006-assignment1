@@ -1,16 +1,22 @@
 import java.util.*;
 import java.util.concurrent.*;
+import Person.*;
+import ManagementSystem.*;
+
 
 public class Scenario{
+
+// Want to try make it work with Person.wait(n);
 
   private static void PeepsFactory(){
     while (true){
       Random rand = new Random();
+      int peopleNum = rand.nextInt(20);
       for (int i = 0; i < peopleNum; i++){
         int cur_floor = rand.nextInt(10);
         int tar_floor  = rand.nextInt(10);
         Person person = new Person(cur_floor, tar_floor);
-         //Add the new person to the elevator class!!!!!!
+        button_press(person);
       }
     }
   }

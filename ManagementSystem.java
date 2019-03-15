@@ -28,6 +28,11 @@ public class ManagementSystem{
   public void addElevator(String key, Elevator elev){
       this.elevators.put(key, elev);
       elev.start();
+      try{
       Thread.sleep(1000); //1 second sleep
+    }
+    catch(Exception InterErr) {
+      System.out.println(InterErr);
+    }
   }
 }

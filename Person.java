@@ -3,7 +3,6 @@ import java.lang.*;
 public class Person extends Thread {
 
   private Thread t;
-  private String pid;
   private int cur_floor;
   private int tar_floor;
 
@@ -14,14 +13,6 @@ public class Person extends Thread {
     this.cur_floor = cur_floor;
     this.tar_floor = tar_floor;
   }
-
-	public String getPid() {
-		return pid;
-	}
-
-	public void setpid(String id) {
-		this.pid = id;
-	}
 
 	public int getCur_floor() {
 		return cur_floor;
@@ -44,9 +35,9 @@ public class Person extends Thread {
   }
 
    public void start () {
-      System.out.println("Starting " +  pid );
+      System.out.println("Starting ");
       if (t == null) {
-         t = new Thread (this, pid);
+         t = new Thread (this);
          t.start ();
       }
    }
