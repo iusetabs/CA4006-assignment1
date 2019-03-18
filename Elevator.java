@@ -5,7 +5,7 @@ import java.util.concurrent.*;
 
 public class Elevator extends Thread{
 
-  // 10 floor 0 - 9
+  // 10 floor 1 - 10
   // Will make Evlevator starting random later
   // active is a way to make sure it's not in use, need? TBD.
 

@@ -1,7 +1,5 @@
 import java.util.*;
 import java.util.concurrent.*;
-import Person.*;
-import ManagementSystem.*;
 
 
 public class Scenario{
@@ -16,7 +14,7 @@ public class Scenario{
         int cur_floor = rand.nextInt(10);
         int tar_floor  = rand.nextInt(10);
         Person person = new Person(cur_floor, tar_floor);
-        button_press(person);
+        ms.button_press(person);
       }
     }
   }
