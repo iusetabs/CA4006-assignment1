@@ -19,7 +19,7 @@ public class Person extends Thread {
     //this.pid = pid;
     this.cur_floor = cur_floor;
     this.tar_floor = tar_floor;
-    this.name = "bitch_number_" + Integer.toString(n);
+    this.name = "Person_" + Integer.toString(n);
   }
 	public int getCur_floor() {
 		return cur_floor;

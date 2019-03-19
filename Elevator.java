@@ -33,7 +33,7 @@ public class Elevator extends Thread{
   }
   Elevator(String i_d, int c_floor, int n_floor){
     this.id = i_d;
-    this.cur_capacity = 1;
+    this.cur_capacity = 0;
     this.current_floor = c_floor;
     this.next_floor = n_floor;
     this.is_active = true;
@@ -52,6 +52,7 @@ public class Elevator extends Thread{
         while(iter.hasNext()){
           //iterate over the contents of the list
             Person p = iter.next();
+            System.out.println("DEBUG: Name: " + p.getPersonName() + " waiting on floor " + p.getCur_floor() + " to go to floor " + p.getTar_floor() + ".");
             int going_to = p.getCur_floor(); //Initally set to where the person is as we need to pick him up!
             int final_dest = p.getTar_floor();
             boolean finished = false;
@@ -63,7 +64,7 @@ public class Elevator extends Thread{
                 this.goDown();
               }
               Thread.sleep(1000);
-              if (this.current_floor == p.getTar_floor() && this.to_go_list.contains(p)){
+              if (this.to_go_list.contains(p) && this.current_floor == p.getTar_floor()){
                 Iterator<Person> p_iter = this.to_go_list.iterator();
                 while(p_iter.hasNext()){
                   Person this_p = p_iter.next();
@@ -77,14 +78,14 @@ public class Elevator extends Thread{
                 this.to_go_list.remove(p); //get out bitch
               }
 
-              if (this.current_floor == p.getCur_floor()){
+              else if (!this.to_go_list.contains(p) && this.getCurrent_floor() == p.getCur_floor()){
                 System.out.println("INFO: Elevator_" + this.getElevId() + " says get in " + p.getPersonName() + "!");
-                System.out.println("DEBUG: Elev floor: " + Integer.toString(this.current_floor) + " " + p.getPersonName() + " is on floor " + Integer.toString(p.getCur_floor()));
+                System.out.println("DEBUG: Elev floor: " + Integer.toString(this.current_floor) + " " + p.getPersonName() + " is on floor " + Integer.toString(p.getCur_floor()) + " and wants to go to floor " + Integer.toString(p.getTar_floor()));
                 going_to = final_dest;
                 this.to_go_list.add(p); //Person has entered the elevator
               }
             }
-          System.out.println("\nINFO: Complete. Elevator_" + this.getElevId() +  " elevator current floor: " + this.getCurrent_floor() + "\nINFO: Complete. Person: " + p.getPersonName() + " person cur_floor: " + Integer.toString(p.getCur_floor()) + " tar_floor: " + Integer.toString(p.getTar_floor()) + "\n");
+          System.out.println("\nINFO: Complete. Elevator_" + this.getElevId() +  " elevator current floor: " + this.getCurrent_floor() + "\nINFO: Complete. Person: " + p.getPersonName() + " person cur_floor: " + Integer.toString(this.getCurrent_floor()) + " tar_floor: " + Integer.toString(p.getTar_floor()) + "\n");
           }
         }
         catch (InterruptedException e){
@@ -127,6 +128,7 @@ public class Elevator extends Thread{
 
   public void goUp(){
     this.current_floor++;
+    System.out.println("DEBUG: Elevator " + this.getElevId() + " going up " + this.getCurrent_floor());
     //TODO shit here about checking if somebody needs to get off
     Iterator<Person> iter = this.to_go_list.iterator();
     while(iter.hasNext()){
@@ -137,6 +139,7 @@ public class Elevator extends Thread{
 
   public void goDown(){
     this.current_floor--;
+    System.out.println("DEBUG: Elevator " + this.getElevId() + " going down " + this.getCurrent_floor());
     //TODO shit here about checking if somebody needs to get off
     Iterator<Person> iter = this.to_go_list.iterator();
     while(iter.hasNext()){
