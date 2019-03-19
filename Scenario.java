@@ -25,7 +25,7 @@ public class Scenario{
   public static void main(String [] args){
     ManagementSystem ms = new ManagementSystem();
     ms.addElevator("test", new Elevator("test", 0, 10));
-    ms.addElevator("test1", new Elevator("test1", 1, 8));
+    ms.addElevator("test1", new Elevator("test1", 1, 8)); // This elevator is never call in requestElevator();
     PeepsFactory(ms, 3);
   }
 }
