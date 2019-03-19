@@ -5,6 +5,7 @@ public class Person extends Thread {
   private Thread t;
   private int cur_floor;
   private int tar_floor;
+  private String name;
 
   Person(){}
 
@@ -14,6 +15,12 @@ public class Person extends Thread {
     this.tar_floor = tar_floor;
   }
 
+  Person(int cur_floor, int tar_floor, int n){
+    //this.pid = pid;
+    this.cur_floor = cur_floor;
+    this.tar_floor = tar_floor;
+    this.name = "bitch_number_" + Integer.toString(n);
+  }
 	public int getCur_floor() {
 		return cur_floor;
 	}
@@ -29,6 +36,14 @@ public class Person extends Thread {
 	public void setTar_floor(int tar_floor) {
 		this.tar_floor = tar_floor;
 	}
+
+  public void setPersonName(String name){
+    this.name = name;
+  }
+
+  public String getPersonName(){
+    return this.name;
+  }
 
   public void run() {
     System.out.println("Hi");

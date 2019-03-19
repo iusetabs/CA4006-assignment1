@@ -20,6 +20,7 @@ public class Elevator extends Thread{
   private int max_capacity = 10; //vanilla 10 people max
   private int next_floor = -1;
   private int cur_capacity = 0;
+  ConcurrentLinkedQueue<Person> waiting_list = new ConcurrentLinkedQueue<Person>();
   ConcurrentLinkedQueue<Person> to_go_list = new ConcurrentLinkedQueue<Person>(); //FIFO not allowed null elements
   //The size function and the any function with All are not guaranted to work. Unless you lock queue during these operations.
   //Don't rely on iterators with this queue. It can concurrently change.
@@ -40,18 +41,56 @@ public class Elevator extends Thread{
   /*-----------END CONSTRUCTORS------------*/
 
   public void run(){
-  //  try{
-      Thread currentThread = Thread.currentThread();
-      System.out.println("Hello from Elevator ID: " + this.id);
-      System.out.println("id of the thread is " + currentThread.getId());
-  //  }
-//    catch (InterruptedException e){
-  //    System.out.println("Elevator ID: " + this.id + " interrupted.");
-  //  }
+      try{
+        Thread currentThread = Thread.currentThread();
+        System.out.println("Hello from Elevator ID: " + this.id);
+        System.out.println("id of the thread is " + currentThread.getId());
+        Iterator<Person> iter = this.waiting_list.iterator();
+        if (this.waiting_list.isEmpty())
+          System.out.println("Elevator " + this.getElevId() + " says there are no people waiting.");
+        while(iter.hasNext()){
+          //iterate over the contents of the list
+            Person p = iter.next();
+            int going_to = p.getCur_floor(); //Initally set to where the person is as we need to pick him up!
+            int final_dest = p.getTar_floor();
+            boolean finished = false;
+            while (!finished){
+              if (ascend(going_to)){
+                this.goUp();
+              }
+              else{
+                this.goDown();
+              }
+              Thread.sleep(1000);
+              if (this.current_floor == p.getCur_floor()){
+                System.out.println("Elevator_" + this.getElevId() + " says get in " + p.getPersonName() + "!");
+                System.out.println("DEBUG: Elev floor: " + Integer.toString(this.current_floor) + " " + p.getPersonName() + " is on floor " + Integer.toString(p.getCur_floor()));
+                going_to = final_dest;
+                this.to_go_list.add(p); //Person has entered the elevator
+              }
+              if (this.current_floor == p.getTar_floor() && this.to_go_list.contains(p)){
+                finished = true;
+                this.to_go_list.remove(p); //get out bitch
+              }
+            }
+          System.out.println("Elevator_" + this.getElevId() + ": Person: " + p.getPersonName() + " cur_floor: " + Integer.toString(p.getCur_floor()) + " tar_floor: " + Integer.toString(p.getTar_floor()));
+          }
+        }
+        catch (InterruptedException e){
+          System.out.println("FATAL: Elevator " + this.getElevId() + " has been interrupted.");
+          e.printStackTrace();
+        }
 	}
 
 
   /*-------------START CLASS FUNCTIONS-------*/
+
+  private boolean ascend(int dest){
+    if (this.current_floor < dest)
+      return true;
+    else
+      return false;
+  }
 
   public boolean arrivingGoingFromTo(Person p){
      //this.current_floor = atFloor;
@@ -66,19 +105,33 @@ public class Elevator extends Thread{
   }
 
   public void newDestination(Person p){
-    if (this.is_active == false)
-      this.setIsActive(true);
-    this.to_go_list.add(p);
+    System.out.println("Adding new person " + p.getPersonName());
+    this.waiting_list.add(p);
+    System.out.println("DEBUG: Is the thread alive?: " + this.isAlive());
+    if (!this.isAlive()){ //TODO we need to fix this. We need to make sure the thread waits!
+      this.start(); //restart the thread if it's dead
+      System.out.println("Restaring thread " + this.getId());
+    }
   }
 
   public void goUp(){
     this.current_floor++;
     //TODO shit here about checking if somebody needs to get off
+    Iterator<Person> iter = this.to_go_list.iterator();
+    while(iter.hasNext()){
+      Person p = iter.next();
+      p.setCur_floor(p.getCur_floor()+1);
+    }
   }
 
   public void goDown(){
     this.current_floor--;
     //TODO shit here about checking if somebody needs to get off
+    Iterator<Person> iter = this.to_go_list.iterator();
+    while(iter.hasNext()){
+      Person p = iter.next();
+      p.setCur_floor(p.getCur_floor()-1);
+    }
   }
 
   /*-------------END CLASS FUNCTIONS---------*/

@@ -13,7 +13,8 @@ public class ManagementSystem{
   }
 
   public boolean button_press(Person p){
-    this.request_queue.add(p);
+    System.out.println(p.getPersonName() + " has pressed the button for the elevator.");
+    this.request_queue.add(p); //TODO this queue will need to be managed.
     if (this.requestElevator(p))
       return true;
     System.out.println("A person has decided to get the stairs instead");
@@ -22,17 +23,11 @@ public class ManagementSystem{
   }
 
   public boolean requestElevator(Person p){
-    return this.elevators.get("Test").arrivingGoingFromTo(p);
+    return this.elevators.get("test").arrivingGoingFromTo(p);
   }
 
   public void addElevator(String key, Elevator elev){
       this.elevators.put(key, elev);
       elev.start();
-      try{
-      Thread.sleep(1000); //1 second sleep
-    }
-    catch(Exception InterErr) {
-      System.out.println(InterErr);
-    }
   }
 }
