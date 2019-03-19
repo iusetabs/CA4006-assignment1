@@ -17,8 +17,7 @@ public class Scenario{
           cur_floor = rand.nextInt(10); //will generate 0. The max floor is 9. The min is 0.
           tar_floor  = rand.nextInt(10);
         }
-        System.out.println("DEBUG: " + cur_floor + " " + tar_floor);
-        Person person = new Person(cur_floor, tar_floor, i);
+        Person person = new Person(Math.abs(cur_floor), Math.abs(tar_floor), i);
         ms.button_press(person);
       }
   }
@@ -27,10 +26,6 @@ public class Scenario{
     ManagementSystem ms = new ManagementSystem();
     ms.addElevator("test", new Elevator("test", 0, 10));
     ms.addElevator("test1", new Elevator("test1", 1, 8));
-    PeepsFactory(ms, 10);
-
-        //int i = 0;
-    //for (Person elem : people_array){
-    //}
+    PeepsFactory(ms, 3);
   }
 }

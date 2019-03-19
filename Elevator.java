@@ -46,8 +46,9 @@ public class Elevator extends Thread{
         System.out.println("Hello from Elevator ID: " + this.id);
         System.out.println("id of the thread is " + currentThread.getId());
         Iterator<Person> iter = this.waiting_list.iterator();
-        if (this.waiting_list.isEmpty())
-          System.out.println("Elevator " + this.getElevId() + " says there are no people waiting.");
+        while (this.waiting_list.isEmpty()){
+          assert true: "Waiting for condition to not be met";
+        }
         while(iter.hasNext()){
           //iterate over the contents of the list
             Person p = iter.next();
@@ -62,18 +63,28 @@ public class Elevator extends Thread{
                 this.goDown();
               }
               Thread.sleep(1000);
+              if (this.current_floor == p.getTar_floor() && this.to_go_list.contains(p)){
+                Iterator<Person> p_iter = this.to_go_list.iterator();
+                while(p_iter.hasNext()){
+                  Person this_p = p_iter.next();
+                  if (this_p.getPersonName().equals(p.getPersonName())){
+                    System.out.println("P overwritten.");
+                    p = this_p;
+                    break;
+                  }
+                }
+                finished = true;
+                this.to_go_list.remove(p); //get out bitch
+              }
+
               if (this.current_floor == p.getCur_floor()){
-                System.out.println("Elevator_" + this.getElevId() + " says get in " + p.getPersonName() + "!");
+                System.out.println("INFO: Elevator_" + this.getElevId() + " says get in " + p.getPersonName() + "!");
                 System.out.println("DEBUG: Elev floor: " + Integer.toString(this.current_floor) + " " + p.getPersonName() + " is on floor " + Integer.toString(p.getCur_floor()));
                 going_to = final_dest;
                 this.to_go_list.add(p); //Person has entered the elevator
               }
-              if (this.current_floor == p.getTar_floor() && this.to_go_list.contains(p)){
-                finished = true;
-                this.to_go_list.remove(p); //get out bitch
-              }
             }
-          System.out.println("Elevator_" + this.getElevId() + ": Person: " + p.getPersonName() + " cur_floor: " + Integer.toString(p.getCur_floor()) + " tar_floor: " + Integer.toString(p.getTar_floor()));
+          System.out.println("\nINFO: Complete. Elevator_" + this.getElevId() +  " elevator current floor: " + this.getCurrent_floor() + "\nINFO: Complete. Person: " + p.getPersonName() + " person cur_floor: " + Integer.toString(p.getCur_floor()) + " tar_floor: " + Integer.toString(p.getTar_floor()) + "\n");
           }
         }
         catch (InterruptedException e){
@@ -105,13 +116,13 @@ public class Elevator extends Thread{
   }
 
   public void newDestination(Person p){
-    System.out.println("Adding new person " + p.getPersonName());
+    //System.out.println("Adding new person " + p.getPersonName());
     this.waiting_list.add(p);
     System.out.println("DEBUG: Is the thread alive?: " + this.isAlive());
-    if (!this.isAlive()){ //TODO we need to fix this. We need to make sure the thread waits!
+    /*if (!this.isAlive()){ //TODO we need to fix this. We need to make sure the thread waits!
       this.start(); //restart the thread if it's dead
       System.out.println("Restaring thread " + this.getId());
-    }
+    }*/
   }
 
   public void goUp(){

@@ -13,7 +13,7 @@ public class ManagementSystem{
   }
 
   public boolean button_press(Person p){
-    System.out.println(p.getPersonName() + " has pressed the button for the elevator.");
+    //System.out.println(p.getPersonName() + " has pressed the button for the elevator.");
     this.request_queue.add(p); //TODO this queue will need to be managed.
     if (this.requestElevator(p))
       return true;
