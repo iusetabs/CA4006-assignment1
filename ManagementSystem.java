@@ -12,19 +12,27 @@ public class ManagementSystem{
      this.elevators = new ConcurrentHashMap<String, Elevator>();
   }
 
-  public boolean button_press(Person p){
+  public void button_press(Person p){
     //System.out.println(p.getPersonName() + " has pressed the button for the elevator.");
     this.request_queue.add(p); //TODO this queue will need to be managed.
-    if (this.requestElevator(p))
-      return true;
-    System.out.println("A person has decided to get the stairs instead");
-    p = null;
-    return false;
+    //if (this.requestElevator(p))
+    //  return true;
+    //System.out.println("A person has decided to get the stairs instead");
+    //p = null;
+    //return false;
+    try {
+      this.elevators.get("test").arrivingGoingFromTo(p);
+    }
+    catch(Exception e){
+      System.out.println("A person has decided to get the stairs instead");
+      System.out.println(e);
+      p = null;
+    }
   }
 
-  public boolean requestElevator(Person p){
-    return this.elevators.get("test").arrivingGoingFromTo(p);
-  }
+//  public boolean requestElevator(Person p){
+//    return this.elevators.get("test").arrivingGoingFromTo(p);
+//  }
 
   public void addElevator(String key, Elevator elev){
       this.elevators.put(key, elev);

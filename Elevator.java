@@ -95,27 +95,29 @@ public class Elevator extends Thread{
       return false;
   }
 
-  public boolean arrivingGoingFromTo(Person p){
+  public void arrivingGoingFromTo(Person p){
      //this.current_floor = atFloor;
-     return this.letMeIn(p);
+     //if (this.cur_capacity+1==this.max_capacity)
+     this.waiting_list.add(p);
+     System.out.println("DEBUG: Is the thread alive?: " + this.isAlive());
   }
 
-  public boolean letMeIn(Person p){
-      if (this.cur_capacity+1==this.max_capacity)
-        return false; //TODO no room for you bbz
-      this.newDestination(p);
-      return true; //Yes you can come in bbz
-  }
+//  public boolean letMeIn(Person p){
+//      if (this.cur_capacity+1==this.max_capacity)
+//        return false; //TODO no room for you bbz
+//      this.newDestination(p);
+//      return true; //Yes you can come in bbz
+//  }
 
-  public void newDestination(Person p){
+//  public void newDestination(Person p){
     //System.out.println("Adding new person " + p.getPersonName());
-    this.waiting_list.add(p);
-    System.out.println("DEBUG: Is the thread alive?: " + this.isAlive());
+    //this.waiting_list.add(p);
+    //System.out.println("DEBUG: Is the thread alive?: " + this.isAlive());
     /*if (!this.isAlive()){ //TODO we need to fix this. We need to make sure the thread waits!
       this.start(); //restart the thread if it's dead
       System.out.println("Restaring thread " + this.getId());
     }*/
-  }
+  //}
 
   public void goUp(){
     this.current_floor++;
