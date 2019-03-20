@@ -104,7 +104,7 @@ public class Elevator extends Thread{
      //this.current_floor = atFloor;
 //     return this.letMeIn(p);
      this.waiting_list.add(p);
-     System.out.println("DEBUG: Is the thread alive?: " + this.isAlive());
+     System.out.println(this.id + " --- DEBUG: Is the thread alive?: " + this.isAlive());
   }
 
 //  public boolean letMeIn(Person p){// merge

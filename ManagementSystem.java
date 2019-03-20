@@ -21,8 +21,8 @@ public class ManagementSystem{
     //p = null;
     //return false;
     try {
-      System.out.println("Pressing all the buttons!!!");
       this.elevators.get("test").arrivingGoingFromTo(p);
+      System.out.println("Pressing all the buttons!!!");
     }
     catch(Exception e){
       System.out.println("A person has decided to get the stairs instead");

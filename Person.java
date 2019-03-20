@@ -20,6 +20,7 @@ public class Person implements Runnable {
     //this.pid = pid;
     this.cur_floor = cur_floor;
     this.tar_floor = tar_floor;
+    this.ms = ms;
     this.name = "Person_" + Integer.toString(n);
   }
 	public int getCur_floor() {
@@ -49,7 +50,6 @@ public class Person implements Runnable {
   public void run() {
     System.out.println(this.name + " run() method being called");
     this.ms.button_press(this);
-    System.out.println("Button press!!");
   }
 
 //   public void start () {
