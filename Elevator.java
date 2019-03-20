@@ -3,7 +3,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 
-public class Elevator extends Thread{
+public class Elevator implements Runnable{
 
   // 10 floor 1 - 10
   // Will make Evlevator starting random later
@@ -16,6 +16,7 @@ public class Elevator extends Thread{
   //jfslkhjs
 
   private int current_floor = 0;
+  private int pri_floor = 0;
   private boolean is_active = false;
   private String id;
   private int max_capacity = 10; //vanilla 10 people max
@@ -96,29 +97,32 @@ public class Elevator extends Thread{
       return false;
   }
 
-  public boolean arrivingGoingFromTo(Person p){//TODO merge
+  public void arrivingGoingFromTo(Person p){//merge
      //this.current_floor = atFloor;
-     return this.letMeIn(p);
+//     return this.letMeIn(p);
+     this.waiting_list.add(p);
+     System.out.println("DEBUG: Is the thread alive?: " + this.isAlive());
   }
 
-  public boolean letMeIn(Person p){//TODO merge
-      if (this.cur_capacity+1==this.max_capacity)
-        return false; //TODO no room for you bbz
-      this.newDestination(p);
-      return true; //Yes you can come in bbz
-  }
+//  public boolean letMeIn(Person p){// merge
+//      if (this.cur_capacity+1==this.max_capacity)
+//        return false; //no room for you bbz
+//      this.newDestination(p);
+//      return true; //Yes you can come in bbz
+//  }
 
-  public void newDestination(Person p){//TODO merge
+//  public void newDestination(Person p){//merge
     //System.out.println("Adding new person " + p.getPersonName());
-    this.waiting_list.add(p);
-    System.out.println("DEBUG: Is the thread alive?: " + this.isAlive());
-    /*if (!this.isAlive()){ //TODO we need to fix this. We need to make sure the thread waits!
+//    this.waiting_list.add(p);
+//    System.out.println("DEBUG: Is the thread alive?: " + this.isAlive());
+    /*if (!this.isAlive()){ // we need to fix this. We need to make sure the thread waits!
       this.start(); //restart the thread if it's dead
       System.out.println("Restaring thread " + this.getId());
     }*/
-  }
+//  }
 
   public void goUp(){
+    this.pri_floor = this.current_floor;
     this.current_floor++;
     System.out.println("DEBUG: Elevator " + this.getElevId() + " going up " + this.getCurrent_floor());
     //TODO shit here about checking if somebody needs to get off
@@ -131,6 +135,7 @@ public class Elevator extends Thread{
   }
 
   public void goDown(){
+    this.pri_floor = this.current_floor;
     this.current_floor--;
     System.out.println("DEBUG: Elevator " + this.getElevId() + " going down " + this.getCurrent_floor());
     //TODO shit here about checking if somebody needs to get off
@@ -139,6 +144,13 @@ public class Elevator extends Thread{
       p.setCur_floor(p.getCur_floor()-1);
       this.to_go_map.put(p.getPersonName(), p);
     }
+  }
+
+  public String getDirection(){
+    if(this.current_floor == 0 || (this.pri_floor < this.current_floor && (this.current_floor != 9))){
+      return "UP";
+    }
+    return "DOWN";
   }
 
   /*-------------END CLASS FUNCTIONS---------*/
