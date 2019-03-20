@@ -13,6 +13,7 @@ public class Elevator extends Thread{
   // Needed for Thread class
   // e.g elevator p = new elevator ();
   // p.start ();
+  //jfslkhjs
 
   private int current_floor = 0;
   private boolean is_active = false;
