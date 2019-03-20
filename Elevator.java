@@ -3,7 +3,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 
-public class Elevator extends Thread{
+public class Elevator implements Runnable{
 
   // 10 floor 1 - 10
   // Will make Evlevator starting random later
@@ -146,7 +146,7 @@ public class Elevator extends Thread{
     }
   }
 
-  public String direction(){
+  public String getDirection(){
     if(this.current_floor == 0 || (this.pri_floor < this.current_floor && (this.current_floor != 9))){
       return "UP";
     }
