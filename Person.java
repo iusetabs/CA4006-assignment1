@@ -1,11 +1,12 @@
 import java.lang.*;
 
-public class Person extends Thread {
+public class Person implements Runnable {
 
-  private Thread t;
+
   private int cur_floor;
   private int tar_floor;
   private String name;
+  private ManagementSystem ms;
 
   Person(){}
 
@@ -15,7 +16,7 @@ public class Person extends Thread {
     this.tar_floor = tar_floor;
   }
 
-  Person(int cur_floor, int tar_floor, int n){
+  Person(int cur_floor, int tar_floor, int n, ManagementSystem ms){
     //this.pid = pid;
     this.cur_floor = cur_floor;
     this.tar_floor = tar_floor;
@@ -46,15 +47,17 @@ public class Person extends Thread {
   }
 
   public void run() {
-    System.out.println("Hi");
+    System.out.println(this.name + " run() method being called");
+    this.ms.button_press(this);
+    System.out.println("Button press!!");
   }
 
-   public void start () {
-      System.out.println("Starting ");
-      if (t == null) {
-         t = new Thread (this);
-         t.start ();
-      }
-   }
+//   public void start () {
+//      System.out.println("Starting ");
+//      if (t == null) {
+//         t = new Thread (this);
+//         t.start ();
+//      }
+//   }
 
 }

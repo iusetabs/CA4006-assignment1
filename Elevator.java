@@ -3,7 +3,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 
-public class Elevator implements Runnable{
+public class Elevator extends Thread{
 
   // 10 floor 1 - 10
   // Will make Evlevator starting random later
@@ -15,6 +15,9 @@ public class Elevator implements Runnable{
   // p.start ();
   //jfslkhjs
 
+
+
+//Remove privious floor and use next_floor
   private int current_floor = 0;
   private int pri_floor = 0;
   private boolean is_active = false;

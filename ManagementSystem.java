@@ -21,6 +21,7 @@ public class ManagementSystem{
     //p = null;
     //return false;
     try {
+      System.out.println("Pressing all the buttons!!!");
       this.elevators.get("test").arrivingGoingFromTo(p);
     }
     catch(Exception e){
