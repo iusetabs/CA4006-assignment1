@@ -42,13 +42,11 @@ public class Elevator extends Thread{
 
   public void run(){
       try{
-        // Sets up and keep the Evlevator waiting until there are passenger to move
         Thread currentThread = Thread.currentThread();
         System.out.println("Hello from Elevator ID: " + this.id);
         System.out.println("id of the thread is " + currentThread.getId());
         Iterator<Person> iter = this.waiting_list.iterator();
         while (this.waiting_list.isEmpty()){
-          // Need to implement wait() and Notify(), we can get the Manager to wake the Evlevator
           assert true: "Waiting for condition to not be met";
         }
         while(iter.hasNext()){
@@ -59,8 +57,6 @@ public class Elevator extends Thread{
             int going_to = p.getCur_floor(); //Initally set to where the person is as we need to pick him up!
             int final_dest = p.getTar_floor();
             boolean finished = false;
-            // This needs to be changed, track direction of elevator
-            // Maybe add hash map of floors?
             while (!finished){
               if (ascend(going_to)){
                 this.goUp();
@@ -74,7 +70,7 @@ public class Elevator extends Thread{
                 System.out.println("\nINFO: Complete. Elevator_" + this.getElevId() + " elevator current floor: " + this.getCurrent_floor() + "\nINFO: Complete. Person: " + p_key + " person cur_floor: " + this.to_go_map.get(p_key).getCur_floor() + " tar_floor: " + Integer.toString(p.getTar_floor()) + "\n");
                 this.to_go_map.remove(p_key); //get out bitch
               }
-              else if (!this.to_go_map.contains(p_key) && this.getCurrent_floor() == p.getCur_floor()){
+              else if (!this.to_go_map.containsKey(p_key) && this.getCurrent_floor() == p.getCur_floor()){
                 System.out.println("INFO: Elevator_" + this.getElevId() + " says get in " + p_key + "!");
                 System.out.println("DEBUG: Elev floor: " + Integer.toString(this.current_floor) + " " + p_key + " is on floor " + Integer.toString(p.getCur_floor()) + " and wants to go to floor " + Integer.toString(p.getTar_floor()));
                 going_to = final_dest;
@@ -99,34 +95,28 @@ public class Elevator extends Thread{
       return false;
   }
 
-  public void arrivingGoingFromTo(Person p){
+  public boolean arrivingGoingFromTo(Person p){//TODO merge
      //this.current_floor = atFloor;
-     //if (this.cur_capacity+1==this.max_capacity)
-     this.waiting_list.add(p);
-     System.out.println("DEBUG: Is the thread alive?: " + this.isAlive());
+     return this.letMeIn(p);
   }
 
-//  public boolean letMeIn(Person p){
-//      if (this.cur_capacity+1==this.max_capacity)
-//        return false; //TODO no room for you bbz
-//      this.newDestination(p);
-//      return true; //Yes you can come in bbz
-//  }
+  public boolean letMeIn(Person p){//TODO merge
+      if (this.cur_capacity+1==this.max_capacity)
+        return false; //TODO no room for you bbz
+      this.newDestination(p);
+      return true; //Yes you can come in bbz
+  }
 
-//  public void newDestination(Person p){
+  public void newDestination(Person p){//TODO merge
     //System.out.println("Adding new person " + p.getPersonName());
-    //this.waiting_list.add(p);
-    //System.out.println("DEBUG: Is the thread alive?: " + this.isAlive());
+    this.waiting_list.add(p);
+    System.out.println("DEBUG: Is the thread alive?: " + this.isAlive());
     /*if (!this.isAlive()){ //TODO we need to fix this. We need to make sure the thread waits!
       this.start(); //restart the thread if it's dead
       System.out.println("Restaring thread " + this.getId());
     }*/
-  //}
+  }
 
-
-  // We need to refactor, we should only compare current_floor to dest_floor. goUp/goDown need to be a one-liner.
-  // If the Dest_floor is reached we need to remove the person from both the queue and hash!!!
-  // We can check direction againt people in the Queue
   public void goUp(){
     this.current_floor++;
     System.out.println("DEBUG: Elevator " + this.getElevId() + " going up " + this.getCurrent_floor());
