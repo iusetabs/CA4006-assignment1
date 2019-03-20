@@ -22,7 +22,7 @@ public class ManagementSystem{
     //return false;
     try {
       this.elevators.get("test").arrivingGoingFromTo(p);
-      System.out.println("Pressing all the buttons!!!");
+      System.out.println(p.getPersonName() + " Has just pushed the button");
     }
     catch(Exception e){
       System.out.println("A person has decided to get the stairs instead");

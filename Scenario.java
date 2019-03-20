@@ -29,7 +29,7 @@ public class Scenario{
     ManagementSystem ms = new ManagementSystem();
     ms.addElevator("test", new Elevator("test", 0, 10));
     //ms.addElevator("test1", new Elevator("test1", 1, 8)); // This elevator is never call in requestElevator();
-    int num = 3;
+    int num = 1;
     for (int i = 0; i < num; i++){
       Random rand = new Random();
       int cur_floor = -1;
