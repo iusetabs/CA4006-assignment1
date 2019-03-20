@@ -16,6 +16,7 @@ public class Elevator extends Thread{
   //jfslkhjs
 
   private int current_floor = 0;
+  private int pri_floor = 0;
   private boolean is_active = false;
   private String id;
   private int max_capacity = 10; //vanilla 10 people max
@@ -119,6 +120,7 @@ public class Elevator extends Thread{
   }
 
   public void goUp(){
+    this.pri_floor = this.current_floor;
     this.current_floor++;
     System.out.println("DEBUG: Elevator " + this.getElevId() + " going up " + this.getCurrent_floor());
     //TODO shit here about checking if somebody needs to get off
@@ -131,6 +133,7 @@ public class Elevator extends Thread{
   }
 
   public void goDown(){
+    this.pri_floor = this.current_floor;
     this.current_floor--;
     System.out.println("DEBUG: Elevator " + this.getElevId() + " going down " + this.getCurrent_floor());
     //TODO shit here about checking if somebody needs to get off
@@ -139,6 +142,13 @@ public class Elevator extends Thread{
       p.setCur_floor(p.getCur_floor()-1);
       this.to_go_map.put(p.getPersonName(), p);
     }
+  }
+
+  public String direction(){
+    if(this.current_floor == 0 || (this.pri_floor < this.current_floor && (this.current_floor != 9))){
+      return "UP";
+    }
+    return "DOWN";
   }
 
   /*-------------END CLASS FUNCTIONS---------*/
