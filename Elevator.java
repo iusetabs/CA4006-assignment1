@@ -42,11 +42,13 @@ public class Elevator extends Thread{
 
   public void run(){
       try{
+        // Sets up and keep the Evlevator waiting until there are passenger to move
         Thread currentThread = Thread.currentThread();
         System.out.println("Hello from Elevator ID: " + this.id);
         System.out.println("id of the thread is " + currentThread.getId());
         Iterator<Person> iter = this.waiting_list.iterator();
         while (this.waiting_list.isEmpty()){
+          // Need to implement wait() and Notify(), we can get the Manager to wake the Evlevator
           assert true: "Waiting for condition to not be met";
         }
         while(iter.hasNext()){
@@ -57,6 +59,8 @@ public class Elevator extends Thread{
             int going_to = p.getCur_floor(); //Initally set to where the person is as we need to pick him up!
             int final_dest = p.getTar_floor();
             boolean finished = false;
+            // This needs to be changed, track direction of elevator
+            // Maybe add hash map of floors?
             while (!finished){
               if (ascend(going_to)){
                 this.goUp();
@@ -119,6 +123,10 @@ public class Elevator extends Thread{
     }*/
   //}
 
+
+  // We need to refactor, we should only compare current_floor to dest_floor. goUp/goDown need to be a one-liner.
+  // If the Dest_floor is reached we need to remove the person from both the queue and hash!!!
+  // We can check direction againt people in the Queue
   public void goUp(){
     this.current_floor++;
     System.out.println("DEBUG: Elevator " + this.getElevId() + " going up " + this.getCurrent_floor());

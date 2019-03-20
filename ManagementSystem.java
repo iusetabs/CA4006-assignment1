@@ -25,7 +25,7 @@ public class ManagementSystem{
     }
     catch(Exception e){
       System.out.println("A person has decided to get the stairs instead");
-      System.out.println(e);
+      e.printStackTrace();
       p = null;
     }
   }
