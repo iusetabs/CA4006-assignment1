@@ -18,6 +18,7 @@ public class Elevator extends Thread{
   final Lock lock = new ReentrantLock();
   public final Condition waiting_to_get_out = lock.newCondition();
   BlockingQueue<Integer> floor_waiting_queue;
+  BlockingQueue<Integer> floor_getoff_queue = new LinkedBlockingQueue<Integer>(); //Tracks floors people need to get off on
   //The size function and the any function with All are not guaranted to work. Unless you lock queue during these operations.
   //Don't rely on iterators with this queue. It can concurrently change.
   //https://docs.oracle.com/javase/10/docs/api/java/util/concurrent/ConcurrentLinkedQueue.html
