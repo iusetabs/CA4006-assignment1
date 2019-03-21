@@ -54,7 +54,7 @@ public class Elevator extends Thread{
             else{
               this.goDown();
             }
-            this.get_the_fuck_out();
+            this.getOut();
             this.get_the_fuck_in(going_to);
           }
           System.out.println("[" + this.getId() + "]: Finished on floor " + Integer.toString(this.getCurrent_floor()));
@@ -84,7 +84,7 @@ public class Elevator extends Thread{
            multi_person = true;
          p.getPersonLock().lock();
          try{
-           p.getElevWaitingCond().signalAll();
+           p.getElevWaitingCond().signal();
            System.out.println("[" + this.getId() + "]: INFO: Elevator_" + this.getElevId() + " says get in " + p.getPersonName() + "!");
            System.out.println("[" + this.getId() + "]: DEBUG: Elev floor: " + Integer.toString(this.getCurrent_floor()) + " " +  p.getPersonName() + " is on floor " + Integer.toString(p.getCur_floor()) + " and wants to go to floor " + Integer.toString(p.getTar_floor()));
          }
@@ -140,19 +140,17 @@ public class Elevator extends Thread{
 
   public void goUp(){
     this.pri_floor = this.current_floor;
-    System.out.println("DEBUG: Elevator " + this.getElevId() + " going up to " + (this.getCurrent_floor() +1));
+    System.out.println("[" + this.getId() + "]: DEBUG: Elevator " + this.getElevId() + " going up to " + (this.getCurrent_floor() +1));
     this.current_floor++;
     System.out.println("[" + this.getId() + "]: DEBUG: Elevator " + this.getElevId() + " going up " + this.getCurrent_floor());
-    this.getOut();
     //TODO shit here about checking if somebody needs to get off
   }
 
   public void goDown(){
     this.pri_floor = this.current_floor;
-    System.out.println("DEBUG: Elevator " + this.getElevId() + " going down to " + (this.getCurrent_floor() -1));
+    System.out.println("[" + this.getId() + "]: DEBUG: Elevator " + this.getElevId() + " going down to " + (this.getCurrent_floor() -1));
     this.current_floor--;
     System.out.println("[" + this.getId() + "]: DEBUG: Elevator " + this.getElevId() + " going down " + this.getCurrent_floor());
-    this.getOut();
     //TODO shit here about checking if somebody needs to get off
   }
 

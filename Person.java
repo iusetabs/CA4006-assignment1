@@ -9,8 +9,8 @@ public class Person implements Runnable {
   private String name;
   private Boolean in_elevator;
   private ConcurrentHashMap<Integer, BlockingQueue<Person>> airport_map;
-  final Lock lock = new ReentrantLock();
-  public final Condition waiting_for_elevator = lock.newCondition();
+  final Lock person_lock = new ReentrantLock();
+  public final Condition waiting_for_elevator = person_lock.newCondition();
   Elevator the_elevator;
   BlockingQueue<Integer> floor_waiting_queue = new LinkedBlockingQueue<Integer>();
 
@@ -63,7 +63,7 @@ public class Person implements Runnable {
         //System.out.println("Reciving signal");
         if(this.tar_floor == this.the_elevator.getCurrent_floor()){
           this.in_elevator = false;
-          System.out.println(this.name + " Leaving!!!");
+          System.out.println("[" + this.getPersonName() +  "_:_ID: " + Thread.currentThread().getId() + "]: " + this.name + " Leaving!!!");
           this.the_elevator.setCur_capacity(the_elevator.getCur_capacity()-1);
         }
       }
