@@ -9,9 +9,9 @@ public class Person implements Runnable {
   private String name;
   private Boolean in_elevator;
   private ConcurrentHashMap<Integer, BlockingQueue<Person>> airport_map;
-  final Lock lock = new ReentrantLock();
-  public final Condition waiting_for_elevator = lock.newCondition();
-  public final Condition waiting_to_get_out = lock.newCondition();
+  final Lock person_lock = new ReentrantLock();
+  public final Condition waiting_for_elevator = person_lock.newCondition();
+  public final Condition waiting_to_get_out = person_lock.newCondition();
   Elevator the_elevator;
   BlockingQueue<Integer> floor_waiting_queue = new LinkedBlockingQueue<Integer>();
 
@@ -33,43 +33,47 @@ public class Person implements Runnable {
   /*-----------END CONSTRUCTORS------------*/
 
   public void run() {
-      System.out.println("Hello from " + this.getPersonName() + " on floor " + Integer.toString(this.getCur_floor()));
+      System.out.println("[" + this.getPersonName() +  "_:_ID: " + Thread.currentThread().getId() + "]: Hello! cur_floor: " + Integer.toString(this.getCur_floor()));
       this.button_press();
-      lock.lock();
-      try{
-        this.before_elevator();
-        System.out.println("I'm getting in " + this.getPersonName());
-        //Getting into elevator
-        this.in_elevator = true;
-        this.elevating();
+      this.before_elevator();
+      //Getting into elevator
+      this.in_elevator = true;
+      this.elevating();
         //getting out of elevator
-        this.in_elevator = false;
-      }
-     finally{
-       lock.unlock();
-      }
+      this.in_elevator = false;
    }
 
   private void before_elevator(){
+    this.person_lock.lock();
     try{
       this.waiting_for_elevator.await();
+      this.the_elevator.getIn(this);
     }
     catch (InterruptedException e){
       e.printStackTrace();
     }
+    finally{
+      this.person_lock.unlock();
+
+    }
   }
   private void elevating(){
+    this.person_lock.lock();
     try{
      this.waiting_to_get_out.await();
     }
     catch (InterruptedException e){
       e.printStackTrace();
     }
+    finally{
+      this.person_lock.unlock();
+    }
   }
   private void button_press(){
     try{
       this.airport_map.get(this.getCur_floor()).put(this);
       this.floor_waiting_queue.put(this.getCur_floor()); //will wake up elevator if nobody on it.
+      System.out.println("[" + this.getPersonName() +  "_:_ID: " + Thread.currentThread().getId() + "]: Button pressed");
     }
     catch (InterruptedException e){
       e.printStackTrace();
@@ -100,10 +104,12 @@ public class Person implements Runnable {
     return this.name;
   }
 
-  public void wake_elevator_is_here(){
-    lock.lock();
-    this.waiting_for_elevator.signal();
-    lock.unlock();
+  public Lock getPersonLock(){
+    return this.person_lock;
+  }
+
+  public Condition getElevWaitingCond(){
+    return this.waiting_for_elevator;
   }
 
 }
