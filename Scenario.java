@@ -26,12 +26,13 @@ public class Scenario{
 
   public static void main(String [] args){
     ScheduledExecutorService executor = Executors.newScheduledThreadPool(3);
-    ConcurrentHashMap<Integer, BlockingQueue<Person>> waiting_Q = new ConcurrentHashMap< BlockingQueue<Person>>();
+    ConcurrentHashMap<Integer, BlockingQueue<Person>> waiting_Q = new ConcurrentHashMap<>();
+    BlockingQueue<Integer> floor_requests = new LinkedBlockingQueue<Integer>();
     for (int i = 0; i < 10; i++){
       BlockingQueue<Person> bq = new LinkedBlockingQueue<>();
       waiting_Q.put(i, bq);
     }
-    Elevator the_elev = new Elevator("elev_1", waiting_Q)
+    Elevator the_elev = new Elevator("elev_1", waiting_Q, floor_requests);
     new Thread(the_elev).start(); //Start elevator thread.
     //TODO ManagementSystem ms = new ManagementSystem();
     //TODO ms.addElevator("test", new Elevator("test", 0, 10));
@@ -44,7 +45,7 @@ public class Scenario{
         cur_floor = rand.nextInt(10); //will generate 0. The max floor is 9. The min is 0.
         tar_floor  = rand.nextInt(10);
       }
-      Person person = new Person(Math.abs(cur_floor), Math.abs(tar_floor), i, waiting_Q, the_elev);
+      Person person = new Person(Math.abs(cur_floor), Math.abs(tar_floor), i, waiting_Q, the_elev, floor_requests);
       executor.schedule(person, Math.abs(rand.nextInt(5)+1) , TimeUnit.SECONDS);
     }
     try {

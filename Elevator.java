@@ -1,23 +1,11 @@
 import java.lang.*;
 import java.util.*;
 import java.util.concurrent.*;
-
+import java.util.concurrent.locks.*;
+import java.util.concurrent.TimeUnit.*;
 
 public class Elevator extends Thread{
 
-  // 10 floor 1 - 10
-  // Will make Evlevator starting random later
-  // active is a way to make sure it's not in use, need? TBD.
-
-
-  // Needed for Thread class
-  // e.g elevator p = new elevator ();
-  // p.start ();
-  //jfslkhjs
-
-
-
-//Remove privious floor and use next_floor
   private int current_floor = 0;
   private int pri_floor = 0;
   private boolean is_active = false;
@@ -25,8 +13,11 @@ public class Elevator extends Thread{
   private int max_capacity = 10; //vanilla 10 people max
   private int next_floor = -1;
   private int cur_capacity = 0;
-  ConcurrentHashMap<Integer, BlockingQueue<Person>> waiting_Q = new ConcurrentHashMap< BlockingQueue<Person>>();
-  ConcurrentHashMap<String, Person> to_go_map = new ConcurrentHashMap<String, Person>(); //FIFO not allowed null elements
+  ConcurrentHashMap<Integer, BlockingQueue<Person>> waiting_Q = new ConcurrentHashMap<>();
+  ConcurrentHashMap<String, Person> to_go_map = new ConcurrentHashMap<>(); //FIFO not allowed null elements
+  final Lock lock = new ReentrantLock();
+  public final Condition waiting_for_people = lock.newCondition();
+  BlockingQueue<Integer> floor_waiting_queue;
   //The size function and the any function with All are not guaranted to work. Unless you lock queue during these operations.
   //Don't rely on iterators with this queue. It can concurrently change.
   //https://docs.oracle.com/javase/10/docs/api/java/util/concurrent/ConcurrentLinkedQueue.html
@@ -34,11 +25,12 @@ public class Elevator extends Thread{
 /*------------CONSTRUCTORS----------------*/
 
   Elevator(){}
-  Elevator(String i_d, ConcurrentHashMap<Integer, BlockingQueue<Person>> map){
+  Elevator(String i_d, ConcurrentHashMap<Integer, BlockingQueue<Person>> map, BlockingQueue<Integer> fq){
      this.id = i_d;
      this.current_floor = 0;
      this.next_floor = 1;
      this.waiting_Q = map;
+     this.floor_waiting_queue = fq;
   }
 
   /*-----------END CONSTRUCTORS------------*/
@@ -49,24 +41,50 @@ public class Elevator extends Thread{
         System.out.println("Hello from Elevator ID: " + this.id);
         System.out.println("id of the thread is " + currentThread.getId());
         while(true){
-          while (this.waiting_Q.get(getCurrent_floor()).isEmpty()){
-            assert true: "Waiting for condition to not be met";
+          int going_to = floor_waiting_queue.poll(1, TimeUnit.MINUTES);
+          //move to the floor waiting.
+          while (!(going_to == this.getCurrent_floor())){
+            Thread.sleep(1000);
+            if (ascend(going_to)){
+              this.goUp();
+            }
+            else{
+              this.goDown();
+            }
           }
-          for(Integer num : this.waiting_Q.keySet()){
-            //iterate over the contents of the list
-              Person p = this.waiting_Q.get(num).take();
+          System.out.println("getting here");
+          boolean multi_person = false;
+          while(!(cur_capacity < 11)){
+            Person p = this.waiting_Q.get(this.getCurrent_floor()).poll(5, TimeUnit.SECONDS);
+            if(p == null){ //if the time has not elapsed
+              if (multi_person)
+                floor_waiting_queue.remove(this.getCurrent_floor());
+              else
+                multi_person = true;
+              System.out.println("INFO: Elevator_" + this.getElevId() + " says get in " + p.getPersonName() + "!");
+              System.out.println("DEBUG: Elev floor: " + Integer.toString(this.getCurrent_floor()) + " " +  p.getPersonName() + " is on floor " + Integer.toString(p.getCur_floor()) + " and wants to go to floor " + Integer.toString(p.getTar_floor()));
+              p.waiting_for_elevator.signal();
+            }
+          }
+          if(cur_capacity != 0){ //time to get people the fuck up!
+            System.out.println("people in elevator");
+          }
+          /*while(!found){
+          //iterate over the contents of the list
+            if(this.waiting_Q.get(this.getCurrent_floor()).isEmpty())
+              this.goUp();
+            else{
+              Person p = this.waiting_Q.get(this.getCurrent_floor()).take();
               String p_key = p.getPersonName();
               System.out.println("DEBUG: Name: " + p_key + " waiting on floor " + p.getCur_floor() + " to go to floor " + p.getTar_floor() + ".");
-              int going_to = p.getCur_floor(); //Initally set to where the person is as we need to pick him up!
+
+
+              }
+              int  = p.getCur_floor(); //Initally set to where the person is as we need to pick him up!
               int final_dest = p.getTar_floor();
               boolean finished = false;
-              while (!finished){
-                if (ascend(going_to)){
-                  this.goUp();
-                }
-                else{
-                  this.goDown();
-                }
+
+
                 Thread.sleep(1000);
                 if (this.to_go_map.containsKey(p_key) && this.current_floor == p.getTar_floor()){
                   finished = true;
@@ -74,13 +92,12 @@ public class Elevator extends Thread{
                   this.to_go_map.remove(p_key); //get out bitch
                 }
                 else if (!this.to_go_map.containsKey(p_key) && this.getCurrent_floor() == p.getCur_floor()){
-                  System.out.println("INFO: Elevator_" + this.getElevId() + " says get in " + p_key + "!");
-                  System.out.println("DEBUG: Elev floor: " + Integer.toString(this.current_floor) + " " + p_key + " is on floor " + Integer.toString(p.getCur_floor()) + " and wants to go to floor " + Integer.toString(p.getTar_floor()));
+
                   going_to = final_dest;
                   this.to_go_map.put(p_key, p); //Person has entered the elevator
                 }
               }
-            }
+            }*/
           }
         }
         catch (InterruptedException e){
@@ -102,7 +119,13 @@ public class Elevator extends Thread{
   public void arrivingGoingFromTo(Person p){//merge
      //this.current_floor = atFloor;
 //     return this.letMeIn(p);
-     this.waiting_Q.get(p.getCur_floor()).put(p);
+  try{
+    this.waiting_Q.get(p.getCur_floor()).put(p);
+  }
+  catch (InterruptedException e){
+    e.printStackTrace();
+  }
+
      System.out.println(this.id + " --- DEBUG: Is the thread alive?: " + this.isAlive());
   }
 
