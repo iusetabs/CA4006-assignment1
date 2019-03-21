@@ -25,7 +25,7 @@ public class Elevator extends Thread{
   private int max_capacity = 10; //vanilla 10 people max
   private int next_floor = -1;
   private int cur_capacity = 0;
-  ConcurrentLinkedQueue<Person> waiting_list = new ConcurrentLinkedQueue<Person>();
+  ConcurrentHashMap<Integer, BlockingQueue<Person>> waiting_Q = new ConcurrentHashMap< BlockingQueue<Person>>();
   ConcurrentHashMap<String, Person> to_go_map = new ConcurrentHashMap<String, Person>(); //FIFO not allowed null elements
   //The size function and the any function with All are not guaranted to work. Unless you lock queue during these operations.
   //Don't rely on iterators with this queue. It can concurrently change.
@@ -35,13 +35,12 @@ public class Elevator extends Thread{
   Elevator(){}
   Elevator(String i_d){
      this.id = i_d;
-  }
-  Elevator(String i_d, int c_floor, int n_floor){
-    this.id = i_d;
-    this.cur_capacity = 0;
-    this.current_floor = c_floor;
-    this.next_floor = n_floor;
-    this.is_active = true;
+     this.current_floor = c_floor;
+     this.next_floor = n_floor;
+     for (int i = 0; i < 10; i++){
+       BlockingQueue<Person> bq = new LinkedBlockingQueue<>();
+       this.waiting_Q.put(i, bq);
+     }
   }
   /*-----------END CONSTRUCTORS------------*/
 
@@ -50,13 +49,12 @@ public class Elevator extends Thread{
         Thread currentThread = Thread.currentThread();
         System.out.println("Hello from Elevator ID: " + this.id);
         System.out.println("id of the thread is " + currentThread.getId());
-        while (this.waiting_list.isEmpty()){
+        while (this.waiting_Q.isEmpty()){
           assert true: "Waiting for condition to not be met";
         }
-        Iterator<Person> iter = this.waiting_list.iterator();
-        while(iter.hasNext()){
+        for(Integer num : this.waiting_Q.keySet()){
           //iterate over the contents of the list
-            Person p = iter.next();
+            Person p = this.waiting_Q.get(num).take();
             String p_key = p.getPersonName();
             System.out.println("DEBUG: Name: " + p_key + " waiting on floor " + p.getCur_floor() + " to go to floor " + p.getTar_floor() + ".");
             int going_to = p.getCur_floor(); //Initally set to where the person is as we need to pick him up!
@@ -103,7 +101,7 @@ public class Elevator extends Thread{
   public void arrivingGoingFromTo(Person p){//merge
      //this.current_floor = atFloor;
 //     return this.letMeIn(p);
-     this.waiting_list.add(p);
+     this.waiting_Q.get(p.getCur_floor()).put(p);
      System.out.println(this.id + " --- DEBUG: Is the thread alive?: " + this.isAlive());
   }
 
