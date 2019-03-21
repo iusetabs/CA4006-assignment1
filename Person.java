@@ -1,26 +1,100 @@
 import java.lang.*;
+import java.util.concurrent.*;
+import java.util.concurrent.locks.*;
 
-public class Person extends Thread {
+public class Person implements Runnable {
 
-  private Thread t;
   private int cur_floor;
   private int tar_floor;
   private String name;
+  private Boolean in_elevator;
+  private ConcurrentHashMap<Integer, BlockingQueue<Person>> airport_map;
+  final Lock person_lock = new ReentrantLock();
+  public final Condition waiting_for_elevator = person_lock.newCondition();
+  Elevator the_elevator;
+  BlockingQueue<Integer> floor_waiting_queue = new LinkedBlockingQueue<Integer>();
+  BlockingQueue<Integer> floor_getoff_queue;
+
+  /*------------CONSTRUCTORS----------------*/
 
   Person(){}
 
-  Person(int cur_floor, int tar_floor){
+  Person(int cur_floor, int tar_floor, int i, ConcurrentHashMap<Integer, BlockingQueue<Person>> map, Elevator e, BlockingQueue<Integer> fq, BlockingQueue<Integer> goff){
     //this.pid = pid;
     this.cur_floor = cur_floor;
     this.tar_floor = tar_floor;
+    this.in_elevator = false;
+    this.airport_map = map;
+    this.the_elevator = e;
+    this.floor_waiting_queue = fq;
+    this.name = "Person_" + Integer.toString(i);
+    this.floor_getoff_queue = goff;
+
+  }
+  /*-----------END CONSTRUCTORS------------*/
+
+  public void run() {
+      System.out.println("[" + this.getPersonName() +  "_:_ID: " + Thread.currentThread().getId() + "]: Hello! cur_floor: " + Integer.toString(this.getCur_floor()));
+      this.button_press();
+      this.before_elevator();
+      //Getting into elevator
+      this.in_elevator = true;
+      this.elevating();
+        //getting out of elevator
+   }
+
+  private void before_elevator(){
+    this.person_lock.lock();
+    try{
+      this.waiting_for_elevator.await();
+      this.the_elevator.getIn(this);
+    }
+    catch (InterruptedException e){
+      e.printStackTrace();
+    }
+  }
+  //signalall().
+  //Current if we ask the perosn they will get out.
+  //Person need to decided to get out.
+
+  private void elevating(){
+    this.the_elevator.lock.lock();
+    try{
+      while(this.in_elevator == true){
+        this.the_elevator.waiting_to_get_out.await();
+        //System.out.println("Reciving signal");
+        if(this.tar_floor == this.the_elevator.getCurrent_floor()){
+          this.in_elevator = false;
+          System.out.println("[" + this.getPersonName() +  "_:_ID: " + Thread.currentThread().getId() + "]: " + this.name + " Leaving!!!");
+          this.the_elevator.setCur_capacity(the_elevator.getCur_capacity()-1);
+          this.floor_getoff_queue.remove(this.tar_floor);
+          System.out.println(this.the_elevator.getCur_capacity());
+        }
+      }
+    }
+    catch (InterruptedException e){
+      e.printStackTrace();
+    }
+    catch(Exception e){
+      e.printStackTrace();
+    }
+    finally{
+      this.the_elevator.lock.unlock();
+    }
   }
 
-  Person(int cur_floor, int tar_floor, int n){
-    //this.pid = pid;
-    this.cur_floor = cur_floor;
-    this.tar_floor = tar_floor;
-    this.name = "Person_" + Integer.toString(n);
+
+  private void button_press(){
+    try{
+      this.airport_map.get(this.getCur_floor()).put(this);
+      this.floor_waiting_queue.put(this.getCur_floor()); //will wake up elevator if nobody on it.
+      System.out.println("[" + this.getPersonName() +  "_:_ID: " + Thread.currentThread().getId() + "]: Button pressed");
+    }
+    catch (InterruptedException e){
+      e.printStackTrace();
+    }
   }
+
 	public int getCur_floor() {
 		return cur_floor;
 	}
@@ -45,16 +119,12 @@ public class Person extends Thread {
     return this.name;
   }
 
-  public void run() {
-    System.out.println("Hi");
+  public Lock getPersonLock(){
+    return this.person_lock;
   }
 
-   public void start () {
-      System.out.println("Starting ");
-      if (t == null) {
-         t = new Thread (this);
-         t.start ();
-      }
-   }
+  public Condition getElevWaitingCond(){
+    return this.waiting_for_elevator;
+  }
 
 }
