@@ -35,8 +35,8 @@ public class Person implements Runnable {
   public void run() {
       System.out.println("Hello from " + this.getPersonName() + " on floor " + Integer.toString(this.getCur_floor()));
       this.button_press();
-      //lock.lock();
-    //  try{
+      lock.lock();
+      try{
         this.before_elevator();
         System.out.println("I'm getting in " + this.getPersonName());
         //Getting into elevator
@@ -44,11 +44,11 @@ public class Person implements Runnable {
         this.elevating();
         //getting out of elevator
         this.in_elevator = false;
-  //   }
-    // finally{
-       //lock.unlock();
-  //   }
-    }
+      }
+     finally{
+       lock.unlock();
+      }
+   }
 
   private void before_elevator(){
     try{
@@ -101,7 +101,9 @@ public class Person implements Runnable {
   }
 
   public void wake_elevator_is_here(){
+    lock.lock();
     this.waiting_for_elevator.signal();
+    lock.unlock();
   }
 
 }

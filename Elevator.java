@@ -42,6 +42,9 @@ public class Elevator extends Thread{
         System.out.println("id of the thread is " + currentThread.getId());
         while(true){
           int going_to = floor_waiting_queue.poll(1, TimeUnit.MINUTES);
+          if (going_to == -1){
+            break;
+          }
           //move to the floor waiting.
           while (!(going_to == this.getCurrent_floor())){
             Thread.sleep(1000);
@@ -65,6 +68,9 @@ public class Elevator extends Thread{
               System.out.println("INFO: Elevator_" + this.getElevId() + " says get in " + p.getPersonName() + "!");
               System.out.println("DEBUG: Elev floor: " + Integer.toString(this.getCurrent_floor()) + " " +  p.getPersonName() + " is on floor " + Integer.toString(p.getCur_floor()) + " and wants to go to floor " + Integer.toString(p.getTar_floor()));
               p.wake_elevator_is_here();
+            }
+            else{
+              break;
             }
           }
           if(cur_capacity != 0){ //time to get people the fuck up!
