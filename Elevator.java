@@ -42,9 +42,21 @@ public class Elevator extends Thread{
         System.out.println("[" + this.getId() + "]: Hello from Elevator ID: " + this.id);
         System.out.println("[" + this.getId() + "]: id of the thread is " + currentThread.getId());
         while(true){
-          int going_to = this.floor_waiting_queue.poll(1, TimeUnit.MINUTES);
-          System.out.println("[" + this.getId() + "]: Going to " + Integer.toString(going_to));
-          if (going_to == -1){
+          int going_to = -1;
+          try{
+            going_to = this.floor_waiting_queue.poll(30, TimeUnit.SECONDS);
+            System.out.println("[" + this.getId() + "]: Going to " + (int) going_to);
+          }
+          catch (NullPointerException e){
+            try{
+              going_to = this.floor_getoff_queue.poll(30, TimeUnit.SECONDS);
+            }
+            catch (NullPointerException npe){
+              going_to = -1;
+            }
+          }
+          if (going_to == -1 && this.cur_capacity == 0 && this.floor_waiting_queue.isEmpty()){
+            System.out.println("Self destructing...LOL");
             break;
           }
           while (!(going_to == this.getCurrent_floor())){
@@ -156,6 +168,12 @@ public class Elevator extends Thread{
   public synchronized void getIn(Person p){
     this.cur_capacity++;
     this.to_go_map.put(p.getPersonName(), p);
+    try{
+      this.floor_getoff_queue.put(p.getTar_floor());
+    }
+    catch (InterruptedException e){
+      e.printStackTrace();
+    }
     System.out.println("[" + this.getId() + "]: " + p.getPersonName() + " has just got in elevator_" + this.getElevId() + ".\n[" + this.getId() + "]: " + "Current capacity = " + Integer.toString(this.getCur_capacity()));
   }
 
