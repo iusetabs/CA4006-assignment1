@@ -32,16 +32,15 @@ public class Elevator extends Thread{
   //https://docs.oracle.com/javase/10/docs/api/java/util/concurrent/ConcurrentLinkedQueue.html
 
 /*------------CONSTRUCTORS----------------*/
+
   Elevator(){}
-  Elevator(String i_d){
+  Elevator(String i_d, ConcurrentHashMap<Integer, BlockingQueue<Person>> map){
      this.id = i_d;
-     this.current_floor = c_floor;
-     this.next_floor = n_floor;
-     for (int i = 0; i < 10; i++){
-       BlockingQueue<Person> bq = new LinkedBlockingQueue<>();
-       this.waiting_Q.put(i, bq);
-     }
+     this.current_floor = 0;
+     this.next_floor = 1;
+     this.waiting_Q = map;
   }
+
   /*-----------END CONSTRUCTORS------------*/
 
   public void run(){
@@ -49,35 +48,37 @@ public class Elevator extends Thread{
         Thread currentThread = Thread.currentThread();
         System.out.println("Hello from Elevator ID: " + this.id);
         System.out.println("id of the thread is " + currentThread.getId());
-        while (this.waiting_Q.isEmpty()){
-          assert true: "Waiting for condition to not be met";
-        }
-        for(Integer num : this.waiting_Q.keySet()){
-          //iterate over the contents of the list
-            Person p = this.waiting_Q.get(num).take();
-            String p_key = p.getPersonName();
-            System.out.println("DEBUG: Name: " + p_key + " waiting on floor " + p.getCur_floor() + " to go to floor " + p.getTar_floor() + ".");
-            int going_to = p.getCur_floor(); //Initally set to where the person is as we need to pick him up!
-            int final_dest = p.getTar_floor();
-            boolean finished = false;
-            while (!finished){
-              if (ascend(going_to)){
-                this.goUp();
-              }
-              else{
-                this.goDown();
-              }
-              Thread.sleep(1000);
-              if (this.to_go_map.containsKey(p_key) && this.current_floor == p.getTar_floor()){
-                finished = true;
-                System.out.println("\nINFO: Complete. Elevator_" + this.getElevId() + " elevator current floor: " + this.getCurrent_floor() + "\nINFO: Complete. Person: " + p_key + " person cur_floor: " + this.to_go_map.get(p_key).getCur_floor() + " tar_floor: " + Integer.toString(p.getTar_floor()) + "\n");
-                this.to_go_map.remove(p_key); //get out bitch
-              }
-              else if (!this.to_go_map.containsKey(p_key) && this.getCurrent_floor() == p.getCur_floor()){
-                System.out.println("INFO: Elevator_" + this.getElevId() + " says get in " + p_key + "!");
-                System.out.println("DEBUG: Elev floor: " + Integer.toString(this.current_floor) + " " + p_key + " is on floor " + Integer.toString(p.getCur_floor()) + " and wants to go to floor " + Integer.toString(p.getTar_floor()));
-                going_to = final_dest;
-                this.to_go_map.put(p_key, p); //Person has entered the elevator
+        while(true){
+          while (this.waiting_Q.get(getCurrent_floor()).isEmpty()){
+            assert true: "Waiting for condition to not be met";
+          }
+          for(Integer num : this.waiting_Q.keySet()){
+            //iterate over the contents of the list
+              Person p = this.waiting_Q.get(num).take();
+              String p_key = p.getPersonName();
+              System.out.println("DEBUG: Name: " + p_key + " waiting on floor " + p.getCur_floor() + " to go to floor " + p.getTar_floor() + ".");
+              int going_to = p.getCur_floor(); //Initally set to where the person is as we need to pick him up!
+              int final_dest = p.getTar_floor();
+              boolean finished = false;
+              while (!finished){
+                if (ascend(going_to)){
+                  this.goUp();
+                }
+                else{
+                  this.goDown();
+                }
+                Thread.sleep(1000);
+                if (this.to_go_map.containsKey(p_key) && this.current_floor == p.getTar_floor()){
+                  finished = true;
+                  System.out.println("\nINFO: Complete. Elevator_" + this.getElevId() + " elevator current floor: " + this.getCurrent_floor() + "\nINFO: Complete. Person: " + p_key + " person cur_floor: " + this.to_go_map.get(p_key).getCur_floor() + " tar_floor: " + Integer.toString(p.getTar_floor()) + "\n");
+                  this.to_go_map.remove(p_key); //get out bitch
+                }
+                else if (!this.to_go_map.containsKey(p_key) && this.getCurrent_floor() == p.getCur_floor()){
+                  System.out.println("INFO: Elevator_" + this.getElevId() + " says get in " + p_key + "!");
+                  System.out.println("DEBUG: Elev floor: " + Integer.toString(this.current_floor) + " " + p_key + " is on floor " + Integer.toString(p.getCur_floor()) + " and wants to go to floor " + Integer.toString(p.getTar_floor()));
+                  going_to = final_dest;
+                  this.to_go_map.put(p_key, p); //Person has entered the elevator
+                }
               }
             }
           }
