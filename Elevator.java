@@ -50,10 +50,10 @@ public class Elevator extends Thread{
         Thread currentThread = Thread.currentThread();
         System.out.println("Hello from Elevator ID: " + this.id);
         System.out.println("id of the thread is " + currentThread.getId());
-        Iterator<Person> iter = this.waiting_list.iterator();
         while (this.waiting_list.isEmpty()){
           assert true: "Waiting for condition to not be met";
         }
+        Iterator<Person> iter = this.waiting_list.iterator();
         while(iter.hasNext()){
           //iterate over the contents of the list
             Person p = iter.next();

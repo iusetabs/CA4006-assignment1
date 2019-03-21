@@ -48,8 +48,8 @@ public class Person implements Runnable {
   }
 
   public void run() {
-    System.out.println(this.name + " run() method being called");
     this.ms.button_press(this);
+    System.out.println(this.name + " run() method being called");
   }
 
 //   public void start () {

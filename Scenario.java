@@ -29,7 +29,7 @@ public class Scenario{
     ManagementSystem ms = new ManagementSystem();
     ms.addElevator("test", new Elevator("test", 0, 10));
     //ms.addElevator("test1", new Elevator("test1", 1, 8)); // This elevator is never call in requestElevator();
-    int num = 1;
+    int num = 3;
     for (int i = 0; i < num; i++){
       Random rand = new Random();
       int cur_floor = -1;
@@ -39,7 +39,7 @@ public class Scenario{
         tar_floor  = rand.nextInt(10);
       }
       Person person = new Person(Math.abs(cur_floor), Math.abs(tar_floor), i, ms);
-      executor.schedule(person, Math.abs(rand.nextInt(5)) , TimeUnit.SECONDS);
+      executor.schedule(person, Math.abs(rand.nextInt(5)+1) , TimeUnit.SECONDS);
     }
     try {
           executor.awaitTermination(1, TimeUnit.DAYS);
