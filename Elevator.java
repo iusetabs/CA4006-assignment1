@@ -52,18 +52,19 @@ public class Elevator extends Thread{
               this.goDown();
             }
           }
-          System.out.println("getting here");
+          System.out.println("On floor " + Integer.toString(this.getCurrent_floor()));
           boolean multi_person = false;
-          while(!(cur_capacity < 11)){
+          while(cur_capacity < 11){
             Person p = this.waiting_Q.get(this.getCurrent_floor()).poll(5, TimeUnit.SECONDS);
-            if(p == null){ //if the time has not elapsed
+            System.out.println(p);
+            if(p != null){ //if the time has not elapsed
               if (multi_person)
                 floor_waiting_queue.remove(this.getCurrent_floor());
               else
                 multi_person = true;
               System.out.println("INFO: Elevator_" + this.getElevId() + " says get in " + p.getPersonName() + "!");
               System.out.println("DEBUG: Elev floor: " + Integer.toString(this.getCurrent_floor()) + " " +  p.getPersonName() + " is on floor " + Integer.toString(p.getCur_floor()) + " and wants to go to floor " + Integer.toString(p.getTar_floor()));
-              p.waiting_for_elevator.signal();
+              p.wake_elevator_is_here();
             }
           }
           if(cur_capacity != 0){ //time to get people the fuck up!

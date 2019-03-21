@@ -33,7 +33,7 @@ public class Person implements Runnable {
   /*-----------END CONSTRUCTORS------------*/
 
   public void run() {
-      System.out.println("Hello from " + this.getPersonName());
+      System.out.println("Hello from " + this.getPersonName() + " on floor " + Integer.toString(this.getCur_floor()));
       this.button_press();
       //lock.lock();
     //  try{
@@ -98,6 +98,10 @@ public class Person implements Runnable {
 
   public String getPersonName(){
     return this.name;
+  }
+
+  public void wake_elevator_is_here(){
+    this.waiting_for_elevator.signal();
   }
 
 }
