@@ -17,6 +17,7 @@ public class Elevator extends Thread{
   ConcurrentHashMap<String, Person> to_go_map = new ConcurrentHashMap<>(); //FIFO not allowed null elements
   final Lock lock = new ReentrantLock();
   public final Condition waiting_for_people = lock.newCondition();
+  public final Condition waiting_to_get_out = lock.newCondition();
   BlockingQueue<Integer> floor_waiting_queue;
   //The size function and the any function with All are not guaranted to work. Unless you lock queue during these operations.
   //Don't rely on iterators with this queue. It can concurrently change.
@@ -67,16 +68,16 @@ public class Elevator extends Thread{
                 multi_person = true;
               System.out.println("INFO: Elevator_" + this.getElevId() + " says get in " + p.getPersonName() + "!");
               System.out.println("DEBUG: Elev floor: " + Integer.toString(this.getCurrent_floor()) + " " +  p.getPersonName() + " is on floor " + Integer.toString(p.getCur_floor()) + " and wants to go to floor " + Integer.toString(p.getTar_floor()));
+              this.setCur_capacity(this.getCur_capacity()+1);
               p.wake_elevator_is_here();
+
             }
             else{
               break;
             }
           }
-          if(cur_capacity != 0){ //time to get people the fuck up!
-            //TODO WARREN HERE
-          }
-          //TODO JAMES here 
+
+          //TODO JAMES here
           /*while(!found){
           //iterate over the contents of the list
             if(this.waiting_Q.get(this.getCurrent_floor()).isEmpty())
@@ -124,6 +125,22 @@ public class Elevator extends Thread{
       return false;
   }
 
+  public void getOut(){
+    if(this.cur_capacity != 0){ // wake everyone up!!!
+        lock.lock();
+        try{
+          waiting_to_get_out.signalAll();
+          //System.out.println("Sending signal");
+        }
+        catch(Exception e){
+          e.printStackTrace();
+        }
+        finally{
+          lock.unlock();
+        }
+    }
+  }
+
   public void arrivingGoingFromTo(Person p){//merge
      //this.current_floor = atFloor;
 //     return this.letMeIn(p);
@@ -156,8 +173,9 @@ public class Elevator extends Thread{
 
   public void goUp(){
     this.pri_floor = this.current_floor;
+    System.out.println("DEBUG: Elevator " + this.getElevId() + " going up to " + (this.getCurrent_floor() +1));
     this.current_floor++;
-    System.out.println("DEBUG: Elevator " + this.getElevId() + " going up " + this.getCurrent_floor());
+    this.getOut();
     //TODO shit here about checking if somebody needs to get off
 
     for(String s : this.to_go_map.keySet()){
@@ -169,8 +187,9 @@ public class Elevator extends Thread{
 
   public void goDown(){
     this.pri_floor = this.current_floor;
+    System.out.println("DEBUG: Elevator " + this.getElevId() + " going down to " + (this.getCurrent_floor() -1));
     this.current_floor--;
-    System.out.println("DEBUG: Elevator " + this.getElevId() + " going down " + this.getCurrent_floor());
+    this.getOut();
     //TODO shit here about checking if somebody needs to get off
     for(String s : this.to_go_map.keySet()){
       Person p = this.to_go_map.get(s);

@@ -11,7 +11,6 @@ public class Person implements Runnable {
   private ConcurrentHashMap<Integer, BlockingQueue<Person>> airport_map;
   final Lock lock = new ReentrantLock();
   public final Condition waiting_for_elevator = lock.newCondition();
-  public final Condition waiting_to_get_out = lock.newCondition();
   Elevator the_elevator;
   BlockingQueue<Integer> floor_waiting_queue = new LinkedBlockingQueue<Integer>();
 
@@ -43,7 +42,7 @@ public class Person implements Runnable {
         this.in_elevator = true;
         this.elevating();
         //getting out of elevator
-        this.in_elevator = false;
+
       }
      finally{
        lock.unlock();
@@ -58,14 +57,35 @@ public class Person implements Runnable {
       e.printStackTrace();
     }
   }
+  //signalall().
+  //Current if we ask the perosn they will get out.
+  //Person need to decided to get out.
+
   private void elevating(){
+    this.the_elevator.lock.lock();
     try{
-     this.waiting_to_get_out.await();
+      while(this.in_elevator == true){
+        this.the_elevator.waiting_to_get_out.await();
+        //System.out.println("Reciving signal");
+        if(this.tar_floor == this.the_elevator.getCurrent_floor()){
+          this.in_elevator = false;
+          System.out.println(this.name + " Leaving!!!");
+          this.the_elevator.setCur_capacity(the_elevator.getCur_capacity()-1);
+        }
+      }
     }
     catch (InterruptedException e){
       e.printStackTrace();
     }
+    catch(Exception e){
+      e.printStackTrace();
+    }
+    finally{
+      this.the_elevator.lock.unlock();
+    }
   }
+
+
   private void button_press(){
     try{
       this.airport_map.get(this.getCur_floor()).put(this);
