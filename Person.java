@@ -13,13 +13,13 @@ public class Person implements Runnable {
   public final Condition waiting_for_elevator = person_lock.newCondition();
   Elevator the_elevator;
   BlockingQueue<Integer> floor_waiting_queue = new LinkedBlockingQueue<Integer>();
-
+  BlockingQueue<Integer> floor_getoff_queue;
 
   /*------------CONSTRUCTORS----------------*/
 
   Person(){}
 
-  Person(int cur_floor, int tar_floor, int i, ConcurrentHashMap<Integer, BlockingQueue<Person>> map, Elevator e, BlockingQueue<Integer> fq){
+  Person(int cur_floor, int tar_floor, int i, ConcurrentHashMap<Integer, BlockingQueue<Person>> map, Elevator e, BlockingQueue<Integer> fq, BlockingQueue<Integer> goff){
     //this.pid = pid;
     this.cur_floor = cur_floor;
     this.tar_floor = tar_floor;
@@ -28,6 +28,8 @@ public class Person implements Runnable {
     this.the_elevator = e;
     this.floor_waiting_queue = fq;
     this.name = "Person_" + Integer.toString(i);
+    this.floor_getoff_queue = goff;
+
   }
   /*-----------END CONSTRUCTORS------------*/
 
@@ -65,7 +67,7 @@ public class Person implements Runnable {
           this.in_elevator = false;
           System.out.println("[" + this.getPersonName() +  "_:_ID: " + Thread.currentThread().getId() + "]: " + this.name + " Leaving!!!");
           this.the_elevator.setCur_capacity(the_elevator.getCur_capacity()-1);
-          this.the_elevator.floor_getoff_queue.remove(this.tar_floor);
+          this.floor_getoff_queue.remove(this.tar_floor);
           System.out.println(this.the_elevator.getCur_capacity());
         }
       }

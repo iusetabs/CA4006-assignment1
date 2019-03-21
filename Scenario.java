@@ -28,11 +28,13 @@ public class Scenario{
     ScheduledExecutorService executor = Executors.newScheduledThreadPool(5);
     ConcurrentHashMap<Integer, BlockingQueue<Person>> waiting_Q = new ConcurrentHashMap<>();
     BlockingQueue<Integer> floor_requests = new LinkedBlockingQueue<Integer>();
+    BlockingQueue<Integer> floor_getoff_queue = new LinkedBlockingQueue<Integer>();
+
     for (int i = 0; i < 10; i++){
       BlockingQueue<Person> bq = new LinkedBlockingQueue<>();
       waiting_Q.put(i, bq);
     }
-    Elevator the_elev = new Elevator("elev_1", waiting_Q, floor_requests);
+    Elevator the_elev = new Elevator("elev_1", waiting_Q, floor_requests, floor_getoff_queue);
     new Thread(the_elev).start(); //Start elevator thread.
     //TODO ManagementSystem ms = new ManagementSystem();
     //TODO ms.addElevator("test", new Elevator("test", 0, 10));
@@ -47,11 +49,11 @@ public class Scenario{
       }
       Person person = new Person(Math.abs(cur_floor), Math.abs(tar_floor), i, waiting_Q, the_elev, floor_requests);*/
       Person [] peeps = {
-          new Person(Math.abs(9), Math.abs(2), 0, waiting_Q, the_elev, floor_requests),
-          new Person(Math.abs(7), Math.abs(2), 1, waiting_Q, the_elev, floor_requests),
-          new Person(Math.abs(5), Math.abs(2), 2, waiting_Q, the_elev, floor_requests),
-          new Person(Math.abs(1), Math.abs(2), 3, waiting_Q, the_elev, floor_requests),
-          new Person(Math.abs(2), Math.abs(2), 4, waiting_Q, the_elev, floor_requests),
+          new Person(Math.abs(9), Math.abs(2), 0, waiting_Q, the_elev, floor_requests, floor_getoff_queue),
+          new Person(Math.abs(7), Math.abs(2), 1, waiting_Q, the_elev, floor_requests, floor_getoff_queue),
+          new Person(Math.abs(5), Math.abs(2), 2, waiting_Q, the_elev, floor_requests, floor_getoff_queue),
+          new Person(Math.abs(1), Math.abs(2), 3, waiting_Q, the_elev, floor_requests, floor_getoff_queue),
+          new Person(Math.abs(2), Math.abs(2), 4, waiting_Q, the_elev, floor_requests, floor_getoff_queue),
 
       };
       Random rand = new Random();
