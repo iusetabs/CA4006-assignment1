@@ -18,7 +18,7 @@ public class Elevator extends Thread{
   final Lock lock = new ReentrantLock();
   public final Condition waiting_to_get_out = lock.newCondition();
   BlockingQueue<Integer> floor_waiting_queue;
-  BlockingQueue<Integer> floor_getoff_queue = new LinkedBlockingQueue<Integer>(); //Tracks floors people need to get off on
+  BlockingQueue<Integer> floor_getoff_queue; //Tracks floors people need to get off on
   //The size function and the any function with All are not guaranted to work. Unless you lock queue during these operations.
   //Don't rely on iterators with this queue. It can concurrently change.
   //https://docs.oracle.com/javase/10/docs/api/java/util/concurrent/ConcurrentLinkedQueue.html
@@ -26,12 +26,13 @@ public class Elevator extends Thread{
 /*------------CONSTRUCTORS----------------*/
 
   Elevator(){}
-  Elevator(String i_d, ConcurrentHashMap<Integer, BlockingQueue<Person>> map, BlockingQueue<Integer> fq){
+  Elevator(String i_d, ConcurrentHashMap<Integer, BlockingQueue<Person>> map, BlockingQueue<Integer> fq, BlockingQueue<Integer> goff){
      this.id = i_d;
      this.current_floor = 0;
      this.next_floor = 1;
      this.waiting_Q = map;
      this.floor_waiting_queue = fq;
+     this.floor_getoff_queue = goff;
   }
 
   /*-----------END CONSTRUCTORS------------*/
@@ -79,8 +80,10 @@ public class Elevator extends Thread{
        if (p == null || this.getCur_capacity() > 10)
           break;
        if(p != null){ //if the time has not elapsed
-         if (multi_person || going_to != this.getCurrent_floor())
+         if (multi_person || going_to != this.getCurrent_floor()){
            this.floor_waiting_queue.remove(this.getCurrent_floor());
+           this.floor_getoff_queue.put(p.getTar_floor());
+         }
          else
            multi_person = true;
          p.getPersonLock().lock();
