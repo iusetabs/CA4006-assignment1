@@ -15,6 +15,8 @@ public class Elevator extends Thread{
   private int cur_capacity = 0;
   ConcurrentHashMap<Integer, BlockingQueue<Person>> waiting_Q = new ConcurrentHashMap<>();
   ConcurrentHashMap<String, Person> to_go_map = new ConcurrentHashMap<>(); //FIFO not allowed null elements
+  final Lock lock = new ReentrantLock();
+  public final Condition waiting_to_get_out = lock.newCondition();
   BlockingQueue<Integer> floor_waiting_queue;
   //The size function and the any function with All are not guaranted to work. Unless you lock queue during these operations.
   //Don't rely on iterators with this queue. It can concurrently change.
@@ -110,6 +112,22 @@ public class Elevator extends Thread{
       return false;
   }
 
+  public void getOut(){
+    if(this.cur_capacity != 0){ // wake everyone up!!!
+        lock.lock();
+        try{
+          waiting_to_get_out.signalAll();
+          //System.out.println("Sending signal");
+        }
+        catch(Exception e){
+          e.printStackTrace();
+        }
+        finally{
+          lock.unlock();
+        }
+    }
+  }
+
   public void arrivingGoingFromTo(Person p){//merge
     try{
       this.waiting_Q.get(p.getCur_floor()).put(p);
@@ -122,15 +140,19 @@ public class Elevator extends Thread{
 
   public void goUp(){
     this.pri_floor = this.current_floor;
+    System.out.println("DEBUG: Elevator " + this.getElevId() + " going up to " + (this.getCurrent_floor() +1));
     this.current_floor++;
     System.out.println("[" + this.getId() + "]: DEBUG: Elevator " + this.getElevId() + " going up " + this.getCurrent_floor());
+    this.getOut();
     //TODO shit here about checking if somebody needs to get off
   }
 
   public void goDown(){
     this.pri_floor = this.current_floor;
+    System.out.println("DEBUG: Elevator " + this.getElevId() + " going down to " + (this.getCurrent_floor() -1));
     this.current_floor--;
     System.out.println("[" + this.getId() + "]: DEBUG: Elevator " + this.getElevId() + " going down " + this.getCurrent_floor());
+    this.getOut();
     //TODO shit here about checking if somebody needs to get off
   }
 
