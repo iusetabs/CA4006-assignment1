@@ -45,12 +45,12 @@ public class Elevator extends Thread{
         while(true){
           int going_to = -1;
           try{
-            going_to = this.floor_waiting_queue.poll(30, TimeUnit.SECONDS);
+            going_to = this.floor_waiting_queue.poll(10, TimeUnit.SECONDS);
             System.out.println("[" + this.getId() + "]: Going to " + (int) going_to);
           }
           catch (NullPointerException e){
             try{
-              going_to = this.floor_getoff_queue.poll(30, TimeUnit.SECONDS);
+              going_to = this.floor_getoff_queue.poll(10, TimeUnit.SECONDS);
             }
             catch (NullPointerException npe){
               going_to = -1;
@@ -78,6 +78,7 @@ public class Elevator extends Thread{
         System.out.println("[" + this.getId() + "]: FATAL: Elevator " + this.getElevId() + " has been interrupted.");
         e.printStackTrace();
       }
+      System.out.println("Elevator is dying");
   }
 
 
