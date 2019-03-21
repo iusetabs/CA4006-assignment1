@@ -74,8 +74,9 @@ public class Elevator extends Thread{
             }
           }
           if(cur_capacity != 0){ //time to get people the fuck up!
-            System.out.println("people in elevator");
+            //TODO WARREN HERE
           }
+          //TODO JAMES here 
           /*while(!found){
           //iterate over the contents of the list
             if(this.waiting_Q.get(this.getCurrent_floor()).isEmpty())
