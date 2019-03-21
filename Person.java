@@ -65,6 +65,7 @@ public class Person implements Runnable {
           this.in_elevator = false;
           System.out.println("[" + this.getPersonName() +  "_:_ID: " + Thread.currentThread().getId() + "]: " + this.name + " Leaving!!!");
           this.the_elevator.setCur_capacity(the_elevator.getCur_capacity()-1);
+          System.out.println(this.the_elevator.getCur_capacity());
         }
       }
     }

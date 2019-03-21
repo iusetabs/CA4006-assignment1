@@ -101,9 +101,7 @@ public class Elevator extends Thread{
    }
 }
 
- private void get_the_fuck_out(){
-   assert true: "Nothing";
- }
+
 
   private boolean ascend(int dest){
     if (this.current_floor < dest)
