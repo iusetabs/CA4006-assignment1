@@ -42,37 +42,7 @@ public class Elevator extends Thread{
         Thread currentThread = Thread.currentThread();
         System.out.println("[" + this.getId() + "]: Hello from Elevator ID: " + this.id);
         System.out.println("[" + this.getId() + "]: id of the thread is " + currentThread.getId());
-        while(true){
-          int going_to = -1;
-          try{
-            going_to = this.floor_waiting_queue.poll(10, TimeUnit.SECONDS);
-            System.out.println("[" + this.getId() + "]: Going to " + (int) going_to);
-          }
-          catch (NullPointerException e){
-            try{
-              going_to = this.floor_getoff_queue.poll(10, TimeUnit.SECONDS);
-            }
-            catch (NullPointerException npe){
-              going_to = -1;
-            }
-          }
-          if (going_to == -1 && this.cur_capacity == 0 && this.floor_waiting_queue.isEmpty()){
-            System.out.println("Self destructing...LOL");
-            break;
-          }
-          while (!(going_to == this.getCurrent_floor())){
-            Thread.sleep(1000);
-            if (ascend(going_to)){
-              this.goUp();
-            }
-            else{
-              this.goDown();
-            }
-            this.getOut();
-            this.get_the_fuck_in(going_to);
-          }
-          System.out.println("[" + this.getId() + "]: Finished on floor " + Integer.toString(this.getCurrent_floor()));
-        }
+        elevatorMoving();
       }
       catch (InterruptedException e){
         System.out.println("[" + this.getId() + "]: FATAL: Elevator " + this.getElevId() + " has been interrupted.");
@@ -84,6 +54,41 @@ public class Elevator extends Thread{
 
 
   /*-------------START CLASS FUNCTIONS-------*/
+
+public void elevatorMoving() throws InterruptedException{
+  while(true){
+    int going_to = -1;
+    try{
+      going_to = this.floor_waiting_queue.poll(10, TimeUnit.SECONDS);
+      System.out.println("[" + this.getId() + "]: Going to " + (int) going_to);
+    }
+    catch (NullPointerException e){
+      try{
+        going_to = this.floor_getoff_queue.poll(10, TimeUnit.SECONDS);
+      }
+      catch (NullPointerException npe){
+        going_to = -1;
+      }
+    }
+    if (going_to == -1 && this.cur_capacity == 0 && this.floor_waiting_queue.isEmpty()){
+      System.out.println("Self destructing...LOL");
+      break;
+    }
+    while (!(going_to == this.getCurrent_floor())){
+      Thread.sleep(1000);
+      if (ascend(going_to)){
+        this.goUp();
+      }
+      else{
+        this.goDown();
+      }
+      this.getOut();
+      this.get_the_fuck_in(going_to);
+    }
+    System.out.println("[" + this.getId() + "]: Finished on floor " + Integer.toString(this.getCurrent_floor()));
+  }
+}
+
 
  private void get_the_fuck_in(int going_to){
    while(cur_capacity < 11){
