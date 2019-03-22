@@ -3,3 +3,6 @@
 
 # Ignore log files when we use them
 *.log
+
+# Ignore the google doc files
+.gdoc
